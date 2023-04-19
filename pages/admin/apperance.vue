@@ -119,11 +119,11 @@
       </div>
 
       <MobileSectionDisplay />
-      <!-- <CropperModal
+      <CropperModal
         v-if="openCropper"
         @data="data = $event"
         @close="openCropper = false"
-      />  -->
+      />
     </div>
   </AdminLayout>
 </template>

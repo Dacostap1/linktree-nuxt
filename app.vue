@@ -3,6 +3,9 @@
   <div class="fixed z-[-1] h-full w-full bg-[#F3F3F1]"></div>
   <NuxtPage />
 
+  <AddLinkOverlay v-if="isMobile && addLinkOverlay" />
+  <UpdateLinkOverlay v-if="isMobile && updatedLinkId" />
+
   <PreviewOverlay v-if="!isMobile && isPreviewOverlay" />
 </template>
 <script setup>
