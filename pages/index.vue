@@ -11,7 +11,7 @@
             placeholder="Email: link@gmail.com"
             v-model:input="email"
             inputType="email"
-            :errors="errors && errors.email ? errors.email[0] : ''"
+            :error="errors && errors.email ? errors.email[0] : ''"
           ></TextInput>
         </div>
 
@@ -20,7 +20,7 @@
             placeholder="Password"
             v-model:input="password"
             inputType="password"
-            :errors="errors && errors.password ? errors.password[0] : ''"
+            :error="errors && errors.password ? errors.password[0] : ''"
           ></TextInput>
         </div>
 
@@ -52,12 +52,33 @@
 
 <script setup>
 import AuthLayout from "~/layouts/AuthLayout.vue";
+import { useUserStore } from "~/stores/user";
+
+definePageMeta({ middleware: "guest" });
+
+const userStore = useUserStore();
+const router = useRouter();
 
 const email = ref(null);
 const password = ref(null);
 const errors = ref(null);
 
-const login = () => {};
-</script>
+onMounted(() => {
+  email.value = "d4ni3l_15@hotmail.com";
+  password.value = "12345678";
+});
 
-<style scoped></style>
+const login = async () => {
+  errors.value = null;
+
+  try {
+    await userStore.getToken();
+    await userStore.login(email.value, password.value);
+    await userStore.getUser();
+    router.push("/admin");
+  } catch (error) {
+    console.log(error);
+    errors.value = error.response.data.errors;
+  }
+};
+</script>

@@ -58,6 +58,8 @@
 import AdminLayout from "~/layouts/AdminLayout.vue";
 import { useUserStore } from "~/stores/user";
 
+definePageMeta({ middleware: "authenticated" });
+
 const userStore = useUserStore();
 
 const selectedInput = ref({ id: 0, str: "" });

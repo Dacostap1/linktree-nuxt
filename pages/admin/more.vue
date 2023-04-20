@@ -40,6 +40,14 @@ onMounted(() => {
 
 const logout = async () => {
   let res = confirm("Are you sure you want to sign out?");
+  if (!res) return;
+
+  try {
+    await userStore.logout();
+    router.push("/");
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 //Si es mayor redirigir para solo tener en la vista un único boton Sing out

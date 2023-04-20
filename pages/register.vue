@@ -11,7 +11,7 @@
             placeholder="Username"
             v-model:input="name"
             inputType="text"
-            :errors="errors && errors.name ? errors.name[0] : ''"
+            :error="errors && errors.name ? errors.name[0] : ''"
           ></TextInput>
         </div>
 
@@ -20,7 +20,7 @@
             placeholder="Email: link@gmail.com"
             v-model:input="email"
             inputType="email"
-            :errors="errors && errors.email ? errors.email[0] : ''"
+            :error="errors && errors.email ? errors.email[0] : ''"
           ></TextInput>
         </div>
 
@@ -29,7 +29,7 @@
             placeholder="Password"
             v-model:input="password"
             inputType="password"
-            :errors="errors && errors.password ? errors.password[0] : ''"
+            :error="errors && errors.password ? errors.password[0] : ''"
           ></TextInput>
         </div>
 
@@ -38,7 +38,7 @@
             placeholder="Confirm password"
             v-model:input="confirmPassword"
             inputType="password"
-            :errors="errors && errors.password ? errors.password[0] : ''"
+            :error="errors && errors.password ? errors.password[0] : ''"
           ></TextInput>
         </div>
 
@@ -68,6 +68,13 @@
 
 <script setup>
 import AuthLayout from "~/layouts/AuthLayout.vue";
+import { useUserStore } from "~/stores/user";
+
+definePageMeta({ middleware: "guest" });
+
+const userStore = useUserStore();
+
+const router = useRouter();
 
 const name = ref(null);
 const email = ref(null);
@@ -75,7 +82,29 @@ const password = ref(null);
 const confirmPassword = ref(null);
 const errors = ref(null);
 
-const register = () => {};
-</script>
+onMounted(() => {
+  name.value = "Dany";
+  email.value = "d4ni3l_15@hotmail.com";
+  password.value = "12345678";
+  confirmPassword.value = "12345678";
+});
 
-<style scoped></style>
+const register = async () => {
+  errors.value = null;
+
+  try {
+    await userStore.getToken();
+    await userStore.register(
+      name.value,
+      email.value,
+      password.value,
+      confirmPassword.value
+    );
+    await userStore.getUser();
+    router.push("/admin");
+  } catch (error) {
+    console.log(error);
+    errors.value = error.response.data.errors;
+  }
+};
+</script>

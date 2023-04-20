@@ -29,7 +29,7 @@ const checkPath = (path) => {
   bgIsgray.value = true;
 };
 
-onMounted(() => {
+onMounted(async () => {
   userStore.colors = colors();
   updatedLinkId.value = 0;
   addLinkOverlay.value = false;
@@ -42,6 +42,8 @@ onMounted(() => {
   if ("ontouchstart" in window) {
     isMobile.value = true;
   }
+
+  await userStore.setAxiosConfig();
 });
 
 const colors = () => {
