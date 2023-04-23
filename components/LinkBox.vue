@@ -4,7 +4,7 @@
       <div class="flex items-center justify-between py-1">
         <div class="flex w-full items-center">
           <input
-            v-if="editName(selectedId, selectedStr)"
+            v-if="showEditInputName(selectedId, selectedStr)"
             :id="`editNameInput-${link.id}`"
             type="text"
             v-model="name"
@@ -46,7 +46,7 @@
       <div class="flex items-center justify-between py-1">
         <div class="flex w-full items-center">
           <input
-            v-if="editLink(selectedId, selectedStr)"
+            v-if="showEditInputLink(selectedId, selectedStr)"
             :id="`editLinkInput-${link.id}`"
             type="text"
             v-model="url"
@@ -197,6 +197,8 @@
 import { useUserStore } from "~/stores/user";
 import { storeToRefs } from "pinia";
 
+//TODO: REVISAR CON ADMIN_LAYOUT
+
 const userStore = useUserStore();
 const { isMobile, updatedLinkId } = storeToRefs(userStore);
 
@@ -224,6 +226,10 @@ onMounted(() => {
     let editNameInput = document.getElementById(
       `editNameInput-${link.value.id}`
     );
+
+    console.log(editNameInput);
+    console.log(e.target);
+
     if (
       editNameInput &&
       !editNameInput.contains(e.target) &&
@@ -231,7 +237,7 @@ onMounted(() => {
       link.value.id == selectedId.value
     ) {
       editNameInput.blur();
-      emit("updatedInput", { id: 0, str: "" });
+      emit("updatedInput", { id: 0, str: "" }); //why?
     }
   });
 
@@ -239,6 +245,7 @@ onMounted(() => {
     let editLinkInput = document.getElementById(
       `editLinkInput-${link.value.id}`
     );
+
     if (
       editLinkInput &&
       !editLinkInput.contains(e.target) &&
@@ -253,13 +260,12 @@ onMounted(() => {
 
 //from loadash
 const updateLink = useDebounce(async () => {
-  // try {
-  //   await userStore.updateLink(link.value.id, name.value, url.value);
-  //   await userStore.getAllLinks();
-  // } catch (error) {
-  //   console.log(error);
-  //   errors.value = error.response.data.errors;
-  // }
+  try {
+    await userStore.updateLink(link.value.id, name.value, url.value);
+  } catch (error) {
+    console.log(error);
+    // errors.value = error.response.data.errors;
+  }
 }, 500);
 
 const changeInput = (str, linkIdNameString) => {
@@ -271,7 +277,7 @@ const changeInput = (str, linkIdNameString) => {
   }
 };
 
-const editName = (selectedId, selectedStr) => {
+const showEditInputName = (selectedId, selectedStr) => {
   if (userStore.isMobile) {
     userStore.updatedLinkId = selectedId;
     return false;
@@ -281,7 +287,7 @@ const editName = (selectedId, selectedStr) => {
   return false;
 };
 
-const editLink = (selectedId, selectedStr) => {
+const showEditInputLink = (selectedId, selectedStr) => {
   if (userStore.isMobile) {
     userStore.updatedLinkId = selectedId;
     return false;
@@ -301,25 +307,25 @@ const editImage = () => {
 };
 
 const updateLinkImage = async () => {
-  // try {
-  //   await userStore.updateLinkImage(data.value);
-  //   await userStore.getAllLinks();
-  //   setTimeout(() => (openCropper.value = false), 300);
-  // } catch (error) {
-  //   console.log(error);
-  // }
+  try {
+    await userStore.uploadLinkImage(data.value);
+    await userStore.getAllLinks();
+    setTimeout(() => (openCropper.value = false), 300);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const deleteLink = async () => {
+  //TODO: AL ELIMINAR UN ITEM SE EXPANDE EL SIGUIENTE
   let res = confirm("Are you sure you want to delete this link?");
-  // try {
-  //   if (res) {
-  //     await userStore.deleteLink(link.value.id);
-  //     await userStore.getAllLinks();
-  //   }
-  // } catch (error) {
-  //   console.log(error);
-  // }
+  try {
+    if (res) {
+      await userStore.deleteLink(link.value.id);
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 watch(

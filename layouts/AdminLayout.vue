@@ -75,7 +75,7 @@
           >
             <img
               class="w-[40px] min-w-[40px] rounded-full"
-              src="https://picsum.photos/id/8/300/320"
+              :src="userStore.image"
               alt="user-image"
             />
           </button>
@@ -154,12 +154,11 @@
       class="fixed bottom-10 flex w-full items-center justify-center"
     >
       <button
-        @click="userStore.isPreviewOverlay = true"
+        @click="showPreview"
         class="flex items-center rounded-full bg-[#DFE2D9] px-5 py-2.5 text-[17px] font-semibold md:hidden"
       >
         <icon name="icon-park-outline:preview-open" class="mr-2" size="20" />
         Preview
-        {{ userStore.isPreviewOverlay }}
       </button>
     </div>
 
@@ -257,7 +256,15 @@ const isTopNav = ref(false);
 const windowWidth = ref(process.client ? window.innerWidth : "");
 const isSecondaryTopNav = ref(false);
 
-onMounted(() => {
+const showPreview = () => {
+  console.log("showPreview");
+  userStore.isPreviewOverlay = true;
+};
+
+onMounted(async () => {
+  await userStore.getAllLinks();
+  await userStore.getThemes();
+
   //La diferencia con mediaQuery es que podemos disparar acciones js
   window.addEventListener("resize", () => {
     windowWidth.value = window.innerWidth;
@@ -335,7 +342,7 @@ const linksSecondaryNav = ref([
     name: "More",
     url: "/admin/more",
     icon: "",
-    img: "https://picsum.photos/id/8/300/320",
+    img: userStore.image,
   },
 ]);
 
@@ -344,25 +351,25 @@ const linksMobile = ref([
     name: "Links",
     url: "/admin",
     icon: "icon-park-outline:hamburger-button",
-    img: "",
+    img: userStore.image,
   },
   {
     name: "Apperance",
     url: "/admin/apperance",
     icon: "fluent:shapes-48-regular",
-    img: "",
+    img: userStore.image,
   },
   {
     name: "Preview",
     url: "/admin/preview",
     icon: "icon-park-outline:preview-open",
-    img: "",
+    img: userStore.image,
   },
   {
     name: "Analytics",
     url: "/",
     icon: "tabler:brand-google-analytics",
-    img: "",
+    img: userStore.image,
   },
   { name: "More", url: "/admin/more", icon: "", img: userStore.image },
 ]);

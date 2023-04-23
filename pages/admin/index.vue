@@ -36,7 +36,7 @@
             ]"
           ></AddLink>
 
-          <div v-for="link in fakeLinks" class="mt-4">
+          <div v-for="link in userStore.allLinks" class="mt-4">
             <LinkBox
               v-if="link"
               :link="link"
@@ -49,7 +49,7 @@
         </div>
       </div>
 
-      <MobileSectionDisplay></MobileSectionDisplay>
+      <MobilePreviewSection />
     </div>
   </AdminLayout>
 </template>
@@ -62,23 +62,9 @@ definePageMeta({ middleware: "authenticated" });
 
 const userStore = useUserStore();
 
+//Para todos
 const selectedInput = ref({ id: 0, str: "" });
 const showAddLink = ref(false);
-
-const fakeLinks = [
-  {
-    id: 1,
-    name: "fake link",
-    url: "https://www.facebook.com/",
-    image: "https://picsum.photos/id/8/300/320",
-  },
-  {
-    id: 2,
-    name: "fake link",
-    url: "https://www.facebook.com/",
-    image: "https://picsum.photos/id/8/300/320",
-  },
-];
 
 const updatedInput = (e) => {
   selectedInput.value.id = e.id;

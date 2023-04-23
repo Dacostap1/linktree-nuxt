@@ -8,6 +8,23 @@ module.exports = {
     "./nuxt.config.{js,ts}",
     "./app.vue",
   ],
+  safelist: [
+    {
+      pattern: /^bg-/,
+    },
+    {
+      pattern: /^bg-gradient-to-/,
+    },
+    {
+      pattern: /^from-/,
+    },
+    {
+      pattern: /^via-/,
+    },
+    {
+      pattern: /^to-/,
+    },
+  ],
   theme: {
     extend: {},
   },

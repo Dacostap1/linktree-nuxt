@@ -1,7 +1,7 @@
 <template>
   <div
     class="fixed h-screen w-full overflow-auto"
-    :class="userStore.theme"
+    :class="userStore.theme.color"
   ></div>
 
   <AdminLayout>
@@ -17,17 +17,17 @@
             class="mt-2 text-center text-2xl font-semibold"
             :class="userStore.theme"
           >
-            @dany
+            @{{ helpers.allLowerCaseNotcaps(userStore.name) }}
           </div>
 
           <div
             class="mb-10 mt-2 text-center text-lg font-light"
             :class="userStore.theme"
           >
-            <div class="px-8">this is bio section</div>
+            <div class="px-8">{{ userStore.bio }}</div>
           </div>
 
-          <div v-for="link in fakeLinks">
+          <div v-for="link in userStore.allLinks">
             <a
               :href="link.url"
               target="_blank"
@@ -52,22 +52,11 @@
 </template>
 
 <script setup>
-import AdminLayout from "~~/layouts/AdminLayout.vue";
-import { useUserStore } from "~~/stores/user";
+import AdminLayout from "~/layouts/AdminLayout.vue";
+import { useUserStore } from "~/stores/user";
 const userStore = useUserStore();
 
-const fakeLinks = [
-  {
-    id: 1,
-    name: "fake link",
-    url: "https://www.facebook.com/",
-    image: "https://picsum.photos/id/8/300/320",
-  },
-  {
-    id: 2,
-    name: "fake link",
-    url: "https://www.facebook.com/",
-    image: "https://picsum.photos/id/8/300/320",
-  },
-];
+definePageMeta({ middleware: "authenticated" });
+
+const helpers = useHelpers();
 </script>

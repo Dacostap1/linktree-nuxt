@@ -30,7 +30,9 @@ import { useUserStore } from "~/stores/user";
 const userStore = useUserStore();
 const router = useRouter();
 
-const windowWidth = ref(window.innerWidth);
+definePageMeta({ middleware: "authenticated" });
+
+const windowWidth = ref(process.client ? window.innerWidth : "");
 
 onMounted(() => {
   window.addEventListener("resize", function () {

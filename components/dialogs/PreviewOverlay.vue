@@ -1,8 +1,8 @@
 <template>
   <div
     id="PreviewOverlay"
-    class="fixed left-0 top-0 z-30 h-full w-full overflow-auto bg-white md:hidden"
-    :class="userStore.theme"
+    class="fixed left-0 top-0 z-30 h-full w-full overflow-auto md:hidden"
+    :class="userStore.theme.color"
   >
     <div
       id="PreviewOverlayTopNav"
@@ -63,14 +63,14 @@
             class="mt-4 text-center text-xl font-semibold"
             :class="userStore.theme"
           >
-            @dany
+            @{{ helpers.allLowerCaseNotcaps(userStore.name) }}
           </div>
 
           <div class="mt-2 text-center font-light" :class="userStore.theme">
-            <div class="px-8">this is bio section</div>
+            <div class="px-8">{{ userStore.bio }}</div>
           </div>
 
-          <div v-for="link in fakeLinks">
+          <div v-for="link in userStore.allLinks">
             <a
               :href="link.url"
               target="_blank"
@@ -108,21 +108,7 @@
 <script setup>
 import { useUserStore } from "~/stores/user";
 const userStore = useUserStore();
-
-const fakeLinks = [
-  {
-    id: 1,
-    name: "fake link",
-    url: "https://www.facebook.com/",
-    image: "https://picsum.photos/id/8/300/320",
-  },
-  {
-    id: 2,
-    name: "fake link",
-    url: "https://www.facebook.com/",
-    image: "https://picsum.photos/id/8/300/320",
-  },
-];
+const helpers = useHelpers();
 
 onUnmounted(() => (userStore.isPreviewOverlay = false));
 </script>

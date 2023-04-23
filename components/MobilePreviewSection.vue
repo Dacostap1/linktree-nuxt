@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="true"
+    v-if="userStore.theme"
     class="fixed right-0 mx-auto mt-[20px] hidden h-[calc(100%-20px)] w-[310px] border-l border-l-gray-300 pt-20 md:block lg:w-[500px]"
   >
     <div
@@ -13,30 +13,32 @@
 
       <div
         class="absolute z-0 h-full w-full max-w-[195px] rounded-3xl lg:max-w-[220px]"
-        :class="userStore.theme"
+        :class="userStore.theme.color"
       />
 
       <div class="z-10 mx-auto h-full w-full overflow-auto">
         <img
           class="mx-auto mt-8 w-[60px] min-w-[60px] rounded-full"
-          src="https://picsum.photos/id/8/300/320"
+          :src="userStore.image"
         />
 
         <div
           class="mt-4 break-words text-center text-sm font-semibold"
-          :class="userStore.theme"
+          :class="userStore.theme.text"
         >
-          @dany
+          @{{ helpers.allLowerCaseNotcaps(userStore.name) }}
         </div>
 
         <div
           class="mt-2 text-center text-[8px] font-semibold"
-          :class="userStore.theme"
+          :class="userStore.theme.text"
         >
-          <div class="break-words px-8">this is the bio section!</div>
+          <div class="break-words px-8">
+            {{ userStore.bio }}
+          </div>
         </div>
 
-        <div v-for="link in fakeLinks">
+        <div v-for="link in userStore.allLinks">
           <a
             :href="link.url"
             target="_blank"
@@ -61,19 +63,5 @@
 <script setup>
 import { useUserStore } from "~/stores/user";
 const userStore = useUserStore();
-
-const fakeLinks = [
-  {
-    id: 1,
-    name: "fake link",
-    url: "https://www.facebook.com/",
-    image: "https://picsum.photos/id/8/300/320",
-  },
-  {
-    id: 2,
-    name: "fake link",
-    url: "https://www.facebook.com/",
-    image: "https://picsum.photos/id/8/300/320",
-  },
-];
+const helpers = useHelpers();
 </script>

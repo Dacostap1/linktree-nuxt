@@ -115,6 +115,8 @@ import { storeToRefs } from "pinia";
 const userStore = useUserStore();
 const { updatedLinkId } = storeToRefs(userStore);
 
+const helpers = useHelpers();
+
 let isName = ref(false);
 let isLink = ref(false);
 let name = ref("");
@@ -126,7 +128,7 @@ let errors = ref(null);
 
 onMounted(() => {
   getLinkById();
-  // userStore.hidePageOverflow(true, "AdminPage");
+  helpers.hidePageOverflow(true, "AdminPage");
 
   document.addEventListener("mouseup", function (e) {
     let editNameInput = document.getElementById("editNameInputMobile");
@@ -146,22 +148,37 @@ onMounted(() => {
 });
 
 const getLinkById = () => {
-  // userStore.allLinks.forEach((link) => {
-  //   if (updatedLinkId.value == link.id) {
-  //     currentLink.value = link;
-  //     name.value = link.name;
-  //     url.value = link.url;
-  //   }
-  // });
+  userStore.allLinks.forEach((link) => {
+    if (updatedLinkId.value == link.id) {
+      currentLink.value = link;
+      name.value = link.name;
+      url.value = link.url;
+    }
+  });
 };
 const close = () => (updatedLinkId.value = 0);
 
 const updateLinkImage = async () => {
-  //
+  try {
+    await userStore.uploadLinkImage(data.value);
+    await userStore.getAllLinks();
+    getLinkById(); //revisar
+    setTimeout(() => (openCropper.value = false), 300);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const deleteLink = async () => {
   let res = confirm("Are you sure you want to delete this link?");
+
+  try {
+    if (res) {
+      await userStore.deleteLink(updatedLinkId.value);
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const isFocused = (str) => {
@@ -177,27 +194,22 @@ const isFocused = (str) => {
   }
 };
 
-const updateLink = useDebounce(async () => {}, 500);
-
-watch(
-  () => name.value,
-  () => {
-    if (name.value && currentLink.value.name != name.value) {
-      errors.value = null;
-      updateLink();
-    }
+const updateLink = useDebounce(async () => {
+  try {
+    await userStore.updateLink(updatedLinkId.value, name.value, url.value);
+    await userStore.getAllLinks();
+    getLinkById();
+  } catch (error) {
+    console.log(error);
   }
-);
+}, 500);
 
-watch(
-  () => url.value,
-  () => {
-    if (url.value && currentLink.value.url != url.value) {
-      errors.value = null;
-      updateLink();
-    }
+watch([() => name.value, () => url.value], () => {
+  if (name.value && currentLink.value.name != name.value) {
+    errors.value = null;
+    updateLink();
   }
-);
+});
 
 watch(
   () => data.value,
@@ -205,7 +217,7 @@ watch(
 );
 
 onUnmounted(() => {
-  // userStore.hidePageOverflow(false, "AdminPage");
+  helpers.hidePageOverflow(false, "AdminPage");
   updatedLinkId.value = 0;
 });
 </script>

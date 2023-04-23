@@ -19,6 +19,10 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+  components: [
+    { path: "~/components" },
+    { path: "~/components/dialogs", extensions: ["vue"] },
+  ],
   modules: [
     "nuxt-icon",
     "nuxt-lodash",

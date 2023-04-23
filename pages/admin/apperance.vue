@@ -17,10 +17,7 @@
 
             <div class="w-full rounded-3xl bg-white p-6">
               <div class="flex items-center justify-between gap-4">
-                <img
-                  class="w-[90px] rounded-full"
-                  src="https://picsum.photos/id/8/300/320"
-                />
+                <img class="w-[90px] rounded-full" :src="userStore.image" />
 
                 <div class="w-full">
                   <button
@@ -74,7 +71,7 @@
               <div
                 class="grid grid-cols-2 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
               >
-                <div v-for="item in userStore.colors">
+                <div v-for="item in userStore.themes">
                   <div
                     class="aspect-[2/3] cursor-pointer rounded-lg border-2 border-dashed border-gray-500"
                     :class="
@@ -118,7 +115,7 @@
         </div>
       </div>
 
-      <MobileSectionDisplay />
+      <MobilePreviewSection />
       <CropperModal
         v-if="openCropper"
         @data="data = $event"
@@ -134,6 +131,8 @@ import { useUserStore } from "~/stores/user";
 
 const userStore = useUserStore();
 
+definePageMeta({ middleware: "authenticated" });
+
 const name = ref("");
 const bio = ref("");
 const data = ref(null);
@@ -146,26 +145,52 @@ onMounted(() => {
   bio.value = userStore.bio;
 });
 
-const updateTheme = async (themeId) => {};
+//wath no se ejecuta con el mount, watchEffect si
+watch(
+  [() => name.value, () => bio.value],
+  async () => await updateUserDetails()
+);
 
-const updateUserDetails = useDebounce(async () => {});
+watch(
+  () => data.value,
+  async () => await updateUserImage()
+);
 
 const bioLengthComputed = computed(() => {
   return !bio.value ? 0 : bio.value.length;
 });
 
-const updateUserImage = async () => {};
+const updateTheme = async (themeId) => {
+  try {
+    userStore.updateUserTheme(themeId);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-watch(
-  () => name.value,
-  async () => await updateUserDetails()
-);
-watch(
-  () => bio.value,
-  async () => await updateUserDetails()
-);
-watch(
-  () => data.value,
-  async () => await updateUserImage()
-);
+const updateUserDetails = useDebounce(async () => {
+  console.log("updateUserDetails");
+
+  errors.value = null;
+
+  try {
+    userStore.updateUserDetails(name.value, bio.value);
+  } catch (error) {
+    console.log(error);
+    errors = error.response.data.errors;
+  }
+}, 1000);
+
+const updateUserImage = async () => {
+  try {
+    await userStore.uploadUserImage(data.value);
+
+    setTimeout(() => {
+      openCropper.value = false;
+    }, 200);
+  } catch (error) {
+    openCropper.value = false;
+    console.log(error);
+  }
+};
 </script>

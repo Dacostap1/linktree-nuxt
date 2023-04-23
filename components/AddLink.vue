@@ -60,5 +60,20 @@ const name = ref("");
 const url = ref("");
 const errors = ref(null);
 
-const addLink = () => {};
+const addLink = async () => {
+  errors.value = null;
+
+  try {
+    await userStore.addLink(name.value, url.value);
+
+    setTimeout(() => {
+      name.value = "";
+      url.value = "";
+      emit("close");
+    }, 200);
+  } catch (error) {
+    console.log(error);
+    errors.value = error.response.data.errors;
+  }
+};
 </script>

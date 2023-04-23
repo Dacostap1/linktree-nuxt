@@ -78,6 +78,7 @@
                 >
                   Cancel
                 </button>
+
                 <button
                   v-if="isOpenCamera"
                   @click="takePhoto()"
@@ -90,6 +91,7 @@
                     size="25"
                   />
                 </button>
+
                 <button
                   v-if="uploadedImage"
                   @click="cropImage()"
@@ -180,7 +182,7 @@ const convertBlobToUrl = async () => {
   isOpenCamera.value = false;
 };
 
-const cropImage = async () => {
+const cropImage = () => {
   isCropping.value = true;
 
   const { coordinates } = cropper.value.getResult();
@@ -193,11 +195,11 @@ const cropImage = async () => {
   data.append("top", coordinates.top || "");
   data.append("id", linkId.value || "");
 
-  isCropping.value = true;
+  isCropping.value = false;
   emit("data", data);
 };
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   video.value.pause();
   video.value.currentTime = 0;
 });
