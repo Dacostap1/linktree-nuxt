@@ -15,14 +15,14 @@
 
           <div
             class="mt-2 text-center text-2xl font-semibold"
-            :class="userStore.theme"
+            :class="userStore.theme.text"
           >
             @{{ helpers.allLowerCaseNotcaps(userStore.name) }}
           </div>
 
           <div
             class="mb-10 mt-2 text-center text-lg font-light"
-            :class="userStore.theme"
+            :class="userStore.theme.text"
           >
             <div class="px-8">{{ userStore.bio }}</div>
           </div>

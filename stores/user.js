@@ -173,8 +173,17 @@ export const useUserStore = defineStore("user", {
       }
     },
 
-    async uploadLinkImage(data) {
-      await $axios.post("/api/links/upload-image", data);
+    async uploadLinkImage(id, data) {
+      console.log("id: " + id);
+      const res = await $axios.post("/api/links/upload-image", data);
+
+      let index = this.$state.allLinks.findIndex((link) => link.id == id);
+
+      console.log(index);
+
+      if (index != -1) {
+        this.$state.allLinks[index] = res.data;
+      }
     },
 
     async getThemes() {

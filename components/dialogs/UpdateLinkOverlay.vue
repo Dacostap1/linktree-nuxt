@@ -156,14 +156,14 @@ const getLinkById = () => {
     }
   });
 };
+
 const close = () => (updatedLinkId.value = 0);
 
 const updateLinkImage = async () => {
   try {
-    await userStore.uploadLinkImage(data.value);
-    await userStore.getAllLinks();
+    await userStore.uploadLinkImage(currentLink.value.id, data.value);
     getLinkById(); //revisar
-    setTimeout(() => (openCropper.value = false), 300);
+    setTimeout(() => (openCropper.value = false), 200);
   } catch (error) {
     console.log(error);
   }
@@ -175,6 +175,7 @@ const deleteLink = async () => {
   try {
     if (res) {
       await userStore.deleteLink(updatedLinkId.value);
+      close();
     }
   } catch (error) {
     console.log(error);

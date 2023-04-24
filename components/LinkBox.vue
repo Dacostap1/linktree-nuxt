@@ -79,14 +79,14 @@
         <div class="relative flex w-full items-center">
           <div
             class="absolute -left-[6px] flex items-center rounded-md px-1.5 py-[2px]"
-            :class="isUploadImage ? 'bg-[#8228D9]' : 'hover:bg-gray-200'"
+            :class="expandImage ? 'bg-[#8228D9]' : 'hover:bg-gray-200'"
           >
             <Icon
               @click="editImage()"
               class="cursor-pointer"
               name="icon-park-twotone:collect-picture"
               :size="isMobile ? '23' : '17'"
-              :color="isUploadImage ? '#FFFFFF' : '#676B5F'"
+              :color="expandImage ? '#FFFFFF' : '#676B5F'"
             />
           </div>
         </div>
@@ -94,17 +94,17 @@
           <div class="relative flex items-center rounded-md px-1.5 py-[2px]">
             <button
               @click="
-                isDelete = true;
-                isUploadImage = false;
+                expandImage = false;
+                expandDelete = true;
               "
               class="absolute -right-[6px] flex items-center rounded-md px-1.5 py-[2px]"
-              :class="isDelete ? 'bg-[#8228D9]' : 'hover:bg-gray-200'"
+              :class="expandDelete ? 'bg-[#8228D9]' : 'hover:bg-gray-200'"
             >
               <Icon
                 class="cursor-pointer"
                 name="carbon:trash-can"
                 size="20"
-                :color="isDelete ? '#FFFFFF' : '#676B5F'"
+                :color="expandDelete ? '#FFFFFF' : '#676B5F'"
               />
             </button>
           </div>
@@ -116,12 +116,12 @@
       id="FooterLinkDeleteSection"
       class="overflow-hidden"
       :class="[
-        { 'max-h-[180px] transition-all duration-300 ease-in': isDelete },
-        { 'max-h-0 transition-all duration-200 ease-out': !isDelete },
+        { 'max-h-[180px] transition-all duration-300 ease-in': expandDelete },
+        { 'max-h-0 transition-all duration-200 ease-out': !expandDelete },
       ]"
     >
       <button
-        @click="isDelete = false"
+        @click="expandDelete = false"
         class="relative w-full bg-[#DFE2D9] py-1.5"
       >
         <Icon
@@ -153,13 +153,15 @@
       id="FooterLinkBoxSection"
       class="overflow-hidden"
       :class="[
-        { 'max-h-[180px] transition-all duration-300 ease-in': isUploadImage },
-        { 'max-h-0 transition-all duration-200 ease-out': !isUploadImage },
+        { 'max-h-[180px] transition-all duration-300 ease-in': expandImage },
+        { 'max-h-0 transition-all duration-200 ease-out': !expandImage },
       ]"
     >
-      <div class="relative w-full bg-[#DFE2D9] py-1.5">
+      <button
+        @click="expandImage = false"
+        class="relative w-full bg-[#DFE2D9] py-1.5"
+      >
         <Icon
-          @click="isUploadImage = false"
           name="mdi:close"
           class="absolute right-1 top-[6px] cursor-pointer"
           size="20"
@@ -168,7 +170,7 @@
         <div class="text-center text-sm font-bold text-[#45494A]">
           Add Thumbnail
         </div>
-      </div>
+      </button>
 
       <div class="flex w-full items-center justify-between px-4 py-5">
         <img class="aspect-square w-[80px] rounded-lg" :src="link.image" />
@@ -214,9 +216,9 @@ const emit = defineEmits(["updatedInput"]);
 let name = ref("");
 let url = ref("");
 let data = ref(null);
-let isDelete = ref(false);
+let expandDelete = ref(false);
 let openCropper = ref(false);
-let isUploadImage = ref(false);
+let expandImage = ref(false);
 
 onMounted(() => {
   name.value = link.value.name;
@@ -301,16 +303,15 @@ const editImage = () => {
   if (userStore.isMobile) {
     userStore.updatedLinkId = link.value.id;
   } else {
-    isUploadImage.value = true;
-    isDelete.value = false;
+    expandImage.value = true;
+    expandDelete.value = false;
   }
 };
 
 const updateLinkImage = async () => {
   try {
-    await userStore.uploadLinkImage(data.value);
-    await userStore.getAllLinks();
-    setTimeout(() => (openCropper.value = false), 300);
+    await userStore.uploadLinkImage(link.value.id, data.value);
+    setTimeout(() => (openCropper.value = false), 200);
   } catch (error) {
     console.log(error);
   }
@@ -322,6 +323,7 @@ const deleteLink = async () => {
   try {
     if (res) {
       await userStore.deleteLink(link.value.id);
+      expandDelete.value = false;
     }
   } catch (error) {
     console.log(error);
